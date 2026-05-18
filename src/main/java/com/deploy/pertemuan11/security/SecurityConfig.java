@@ -21,4 +21,18 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return username -> {
+            com.deploy.pertemuan11.model.User user = userRepository.findByUsername(username).
+                    orElseThrow(() -> new UsernameNotFoundException("User Tidak Ditemukan"));
+
+            return User
+                    .withUsername(user.getUsername())
+                    .password(user.getPassword())
+                    .authorities("USER")
+                    .build();
+        };
+    }
 }
